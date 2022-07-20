@@ -1,0 +1,56 @@
+{% load mptt_tags %}
+<div class="modal fade show" id="change_category_modal" style="display: none; padding-right: 17px;" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h4 class="modal-title">Problemquelle auswählen</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <tbody>
+                        {% recursetree problem_sources %}
+                            {% if node.is_leaf_node %}
+                                <tr>
+                                    <td class="border-0">
+                                        <a href="{% url "ticket_detail" id=ticket.id %}?problem_source={{ node.id }}">{{ node.name }}</a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr data-widget="expandable-table" aria-expanded="false">
+                                    <td>
+                                        <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                        {{ node.name }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if not node.is_leaf_node %}
+                                <ul class="children">
+                                    <tr class="expandable-body d-none">
+                                        <td>
+                                            <div class="p-0" style="display: none;">
+                                                <table class="table table-hover">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>{{ children }}</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ul>
+                            {% endif %}
+                        {% endrecursetree %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+</div>

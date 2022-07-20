@@ -1,0 +1,17 @@
+<div class="col-md-3" style="cursor: pointer;"
+        {% if source.has_children %}
+     onclick="window.location='/problem_sources/{{ source.slug }}/'"
+        {% else %}
+     onclick="window.location='/create_ticket/{{ source.slug }}/'"
+        {% endif %}>
+    <div class="info-box small-box">
+        <span class="info-box-icon bg-info"><i class="fas fa-ticket-alt"></i></span>
+
+        <div class="info-box-content">
+            <span class="info-box-text">{{ source.name }}</span>
+{#            <span class="info-box-text"><b>{{ source.count_tickets }}</b> Ticket(s) offen</span>#}
+        </div>
+        <!-- /.info-box-content -->
+    </div>
+    <!-- /.info-box -->
+</div>

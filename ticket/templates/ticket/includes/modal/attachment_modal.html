@@ -1,0 +1,19 @@
+<div class="modal fade show" id="attachment_{{ attachment.id }}_modal" style="display: none; padding-right: 17px;" aria-modal="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-secondary">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ attachment.name }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <img src="{{ attachment.file.url }}" class="align-content-center" style="width: 100%; height: auto; max-width: fit-content">
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+</div>

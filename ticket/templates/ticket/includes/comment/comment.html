@@ -1,0 +1,30 @@
+<div class="post">
+    <div class="user-block">
+        <img class="img-circle img-bordered-sm"
+             src="/static/assets/img/user1-128x128.jpg" alt="user image">
+        <span class="username">
+                          <a href="#">
+                              {% if comment.author.first_name %}
+                                  {{ comment.author.first_name }}
+                              {% elif comment.author.username %}
+                                  {{ comment.author.username }}
+                              {% else %}
+                                  Anonymous
+                              {% endif %}</a>
+                        </span>
+        <span class="description">Am {{ comment.created_date.date }} um {{ comment.created_date.time }} Uhr</span>
+    </div>
+    <!-- /.user-block -->
+    <p>
+        {{ comment.text }}
+    </p>
+
+    <p>
+        <a id="reply_to_{{ comment.id }}"
+           onclick="toggle_reply('reply_{{ comment.id }}', 'reply_to_{{ comment.id }}')"
+           class="link-black text-sm"
+           style="cursor: pointer;"><i class="fas fa-reply"></i>
+            Antworten</a>
+    </p>
+</div>
+{% include './create_reply.html' %}

@@ -1,0 +1,59 @@
+<div class="{{ user.is_staff|yesno:"col-12 col-sm-4,col-12 col-sm-6" }}">
+    <div class="info-box">
+        <span class="info-box-icon bg-{{ ticket.completed|yesno:"danger,success" }}">
+            <i class="{{ ticket.completed|yesno:"fas fa-lock,fas fa-lock-open" }}"></i>
+        </span>
+        <div class="info-box-content">
+            <span class="info-box-text">Status</span>
+            <span class="info-box-number">
+                {% if ticket.completed %}
+                    Geschlossen
+                {% elif not ticket.completed and ticket.is_paused %}
+                    Offen
+                    <div class="text-muted text-xs">bis {{ ticket.paused_until }} auf Eis gelegt</div>
+                {% else %}
+                    Offen
+                {% endif %}
+        </span>
+        </div>
+    </div>
+</div>
+
+<div class="{{ user.is_staff|yesno:"col-12 col-sm-4,col-12 col-sm-6" }}">
+    <div class="info-box">
+        <span class="info-box-icon bg-{{ ticket.assigned_to|yesno:"warning,danger" }}"><i
+                class="fas fa-user-tag"></i></span>
+        <div class="info-box-content">
+        <span class="info-box-text">
+              {% if ticket.assigned_to %}
+                  Zugewiesen an
+              {% else %}
+                  Nicht zugewiesen
+              {% endif %}
+        </span>
+            <span class="info-box-number">
+              {% if ticket.assigned_to and ticket.assigned_to.first_name %}
+                  {{ ticket.assigned_to.first_name }}
+              {% elif ticket.assigned_to %}
+                  {{ ticket.assigned_to.username }}
+              {% endif %}
+        </span>
+        </div>
+    </div>
+</div>
+
+{% if request.user.is_staff %}
+    <div class="col-12 col-sm-4">
+        <div class="info-box">
+        <span class="info-box-icon bg-{{ ticket.priority_color }}">
+            <i class="fas fa-business-time"></i>
+        </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Priorität</span>
+                <span class="info-box-number">
+        {{ ticket.priority_text }}
+        </span>
+            </div>
+        </div>
+    </div>
+{% endif %}

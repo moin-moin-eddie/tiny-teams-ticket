@@ -1,0 +1,225 @@
+{% extends "layouts/base.html" %}
+
+{% block immediatescripts %}
+    <!-- MS Teams SDK -->
+    <script src="https://statics.teams.cdn.office.net/sdk/v1.8.0/js/MicrosoftTeams.min.js"></script>
+    <!-- check context before loading everything else -->
+    <script>
+        microsoftTeams.initialize();
+        microsoftTeams.getContext(function (context) {
+            console.log(context);
+            if (context.subEntityId) {
+                let ref = document.referrer;
+                if (!(ref.includes("/ticket/") && ref.includes("/detail/")) && !(ref.includes('/problem_sources/')) && !(ref.includes("/tickets/"))) {
+                    window.location = "/ticket/" + context.subEntityId + "/detail/";
+                }
+            }
+        });
+    </script>
+{% endblock immediatescripts %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} {% endblock body_class %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Dashboard</h1>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+
+                {% if user.is_staff %}
+                    {% include 'ticket/includes/dashboard/admin_statistics.html' %}
+                    {% include 'ticket/includes/modal/search_users_modal.html' %}
+                {% else %}
+                    {% include 'ticket/includes/dashboard/user_statistics.html' %}
+                {% endif %}
+                <!-- Timelime example  -->
+                <div class="row">
+                    <div class="col-md-{{ user.is_staff|yesno:"6,12" }}">
+                        <div class="timeline">
+                            {% include "ticket/includes/timeline/timeline_events.html" %}
+                        </div>
+                    </div>
+                    {% if user.is_staff %}
+                        <div class="col-md-6">
+                            {% if tickets %}
+                                {% include "ticket/includes/dashboard/open_inactive_tickets.html" %}{% endif %}
+                            {% include "ticket/includes/dashboard/tickets_per_day.html" %}
+                            {% include "ticket/includes/dashboard/tickets_per_problemsource.html" %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page_obj.has_next %}
+                        {% include 'ticket/includes/pagination.html' %}
+                    {% endif %}
+                </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- jQuery -->
+    <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/assets/js/adminlte.min.js"></script>
+    <!-- SweetAlert -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+
+        var csrftoken = '{{ csrf_token }}';
+
+        window.onload = function () {
+            Chart.defaults.color = "{{ user.microsoftprofile.dark_mode_active|yesno:'#ffffff,#343a40' }}";
+            var pie_ctx = document.getElementById('pie-chart').getContext('2d');
+            window.myPie = new Chart(pie_ctx, pie_config);
+            var bar_ctx = document.getElementById('bar-chart').getContext('2d');
+            window.myBar = new Chart(bar_ctx, bar_config);
+        };
+
+        function notify_user_reset_password(id) {
+            $.ajax({
+                type: 'post',
+                url: '/reset-password/' + id + "/",
+                data: {csrfmiddlewaretoken: csrftoken},
+                dataType: 'json',
+                success: function (data) {
+                    // fiddle https://jsfiddle.net/hyfor5z7/11/
+                    let button = document.getElementById("reset_button_" + id);
+                    button.disabled = true;
+                    button.innerHTML = "Passwort zurückgesetzt";
+                    button.className = "btn btn-sm btn-success";
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Passwort erfolgreich zurückgesetzt.',
+                        text: 'Benutzer wird per Email informiert.'
+                    })
+                }
+            });
+        }
+
+        function showResults() {
+
+            let name = $('#name').val();
+
+            $.ajax({
+                url: '/ajax/search-users/',
+                data: {
+                    'name': name
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // fiddle https://jsfiddle.net/hyfor5z7/11/
+                    let table = $('#results_table');
+                    let results = JSON.parse(data.results);
+                    if (results.length > 0) {
+                        table.empty();
+                        $.each(results, function (i) {
+                            let id = results[i].pk;
+                            let first_name = results[i].fields.first_name;
+                            let row = document.createElement('tr');
+                            let idcol = document.createElement('td');
+                            let namecol = document.createElement('td');
+                            let actionscol = document.createElement('td');
+                            actionscol.className = "project-actions text-right";
+                            let pwresetbtn = document.createElement('button');
+                            let hijackbtn = document.createElement('button');
+                            let hijackform = document.createElement('form');
+
+                            idcol.innerHTML = id;
+                            namecol.innerHTML = first_name;
+
+                            pwresetbtn.innerHTML = "Passwort zurücksetzen";
+                            pwresetbtn.className = "btn btn-sm btn-danger";
+                            pwresetbtn.id = "reset_button_" + id;
+                            pwresetbtn.onclick = function () {
+                                notify_user_reset_password(id);
+                            };
+
+                            hijackform.action = "/hijack/" + id + "/";
+                            hijackform.method = "POST";
+                            hijackform.innerHTML = '{% csrf_token %}';
+
+                            hijackbtn.innerHTML = "Als Benutzer einloggen";
+                            hijackbtn.type = "submit";
+                            hijackbtn.className = "btn btn-sm btn-warning";
+                            hijackbtn.onclick = function () {
+                                this.disabled = true;
+                                this.form.submit();
+                            };
+
+                            hijackform.append(hijackbtn);
+                            actionscol.append(pwresetbtn, hijackform);
+                            row.append(idcol, namecol, actionscol);
+                            table.append(row);
+                        });
+                    } else {
+                        table.empty();
+                        table.append('<tr><td>Keine Ergebnisse</td></tr>')
+                    }
+                }
+            });
+            return false;
+        }
+
+
+        var delay = (function () {
+            var timer = 0;
+            return function (callback, ms) {
+                clearTimeout(timer);
+                timer = setTimeout(callback, ms);
+            };
+        })();
+
+
+        $('#search_users_form').submit(function (e) {
+            e.preventDefault();
+            showResults();
+        });
+
+        $('#name').keyup(function (e) {
+            delay(function () {
+                showResults();
+            }, 1000);
+        });
+
+    </script>
+
+{% endblock javascripts %}

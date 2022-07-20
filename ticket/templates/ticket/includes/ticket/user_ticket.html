@@ -1,0 +1,15 @@
+<div class="col-lg-3 col-6" style="cursor: pointer;" onclick="window.location='/ticket/{{ ticket.id }}/detail/'">
+    <!-- small box -->
+    <div class="small-box bg-info">
+        <div class="inner">
+            <h4>{{ ticket.title }}<sup style="font-size: 20px"></sup></h4>
+
+            <p>Erstellt am: {{ ticket.created_date }} <br> {% if ticket_type == "assigned_to_me" %}Erstellt von:
+                {{ ticket.created_by.first_name }}{% endif %}</p>
+        </div>
+        <div class="icon">
+            <i class="fas fa-ticket-alt"></i>
+        </div>
+        <a href="#" class="small-box-footer">Auswählen <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+</div>

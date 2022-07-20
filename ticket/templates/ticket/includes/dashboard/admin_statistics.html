@@ -1,0 +1,65 @@
+<div class="row">
+    <div class="col-lg-4 col-6">
+        <!-- small box -->
+        <div class="small-box bg-gradient-info">
+            <div class="inner">
+                <h3><i class="fas fa-search"></i></h3>
+
+                <h5>Nach einem Benutzer suchen</h5>
+            </div>
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <a data-toggle="modal" data-target="#search_users_modal" class="small-box-footer">Los! <i
+                    class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-4 col-6">
+        <!-- small box -->
+        <div class="small-box bg-gradient-success">
+            <div class="inner">
+                <h3>{{ all_open_ticket_count }} </h3>
+                {% if all_open_ticket_with_high_prio_count != 0 %}
+
+                {% endif %}
+                {% if all_open_ticket_count == 1 %}
+                    <h5>offenes Ticket</h5>
+                {% else %}
+                    <h5>offene Tickets</h5>
+                {% endif %}
+            </div>
+
+            <div class="icon">
+                <i class="fas fa-lock-open"></i>
+            </div>
+            <a href="{% url 'ticket_list' type='all' status='open' %}"
+               class="small-box-footer">Anzeigen <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-4 col-6">
+        <!-- small box -->
+        <div class="small-box bg-gradient-danger">
+            <div class="inner">
+                <h3>{{ all_closed_ticket_count }}</h3>
+
+                {% if all_closed_ticket_count == 1 %}
+                    <h5>Geschlossenes Ticket</h5>
+                {% elif all_closed_ticket_count != 0 %}
+                    <h5>Geschlossene Tickets</h5>
+                {% else %}
+                    <h5>Keine geschlossenen Tickets</h5>
+                {% endif %}
+            </div>
+            <div class="icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <a href="{% url 'ticket_list' type='all' status='closed' %}"
+               class="small-box-footer">Anzeigen <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+
+    <!-- ./col -->
+</div>

@@ -1,0 +1,33 @@
+<form id="create_edit_ticket" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card-body">
+        <div class="form-group">
+            {{ ticket_form.title }}
+        </div>
+        {% if ticket_form.errors %}
+            <p class="text-red">Eine Beschreibung des Problems ist erforderlich</p>
+        {% endif %}
+        <div class="form-group">
+            {{ ticket_form.note }}
+        </div>
+        <div class="form-group">
+            <label for="attachments">
+                Dateien hochladen
+            </label>
+            <div class="input-group">
+                <div class="custom-file">
+                    {{ ticket_form.files }}
+                    <label class="custom-file-label" for="attachments">
+                        Datei auswählen
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button form="create_edit_ticket" onclick="this.disabled=true,this.form.submit()" type="submit"
+                class="btn btn-primary">
+            Speichern
+        </button>
+    </div>
+</form>

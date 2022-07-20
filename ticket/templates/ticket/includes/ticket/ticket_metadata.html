@@ -1,0 +1,36 @@
+<p class="text-muted">{{ ticket.note|safe }}</p>
+<br>
+<div class="text-muted">
+    <p class="text-sm">Erstellt am
+        <b class="d-block">{{ ticket.created_date }}</b>
+    </p>
+    <p class="text-sm">Erstellt von
+        <b class="d-block">{{ ticket.created_by.first_name }}</b>
+    </p>
+
+    {% if ticket.was_updated %}
+        <p class="text-sm">Zuletzt bearbeitet am {{ ticket.last_modified.date }} um {{ ticket.last_modified.time }} Uhr
+            von {{ ticket.modified_by.first_name }}
+        </p>
+    {% endif %}
+    {% if followers.count >= 3 or ticket.created_by == ticket.assigned_to %}
+        <table>
+            <tr>
+                <th id="followers_header">
+                    Folgt diesem Ticket
+                </th>
+            </tr>
+            <tbody id="followers_body">
+            {% for follower in followers %}
+                {% if follower != ticket.assigned_to and not follower.is_staff %}
+                    <tr>
+                        <td>
+                            {{ follower.first_name }}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>

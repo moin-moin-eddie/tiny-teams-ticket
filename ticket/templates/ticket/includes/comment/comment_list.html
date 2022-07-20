@@ -1,0 +1,8 @@
+{% for comment in ticket.get_comments %}
+    {% include "./comment.html" %}
+    {% if comment.has_replies %}
+        {% for reply in comment.get_replies %}
+            {% include './reply.html' %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}

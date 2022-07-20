@@ -1,0 +1,18 @@
+<div>
+    <div class="timeline-item ml-5">
+        <b class="timeline-header mb-1">
+            {{ reply.author.first_name }}
+        </b>
+        <span class="text-sm text-muted float-right"><i class="fas fa-clock"></i>
+            {% if reply.created_date.date == event.date %}
+                {{ reply.created_date.time }}
+            {% else %}
+                {{ reply.created_date }}
+            {% endif %}
+        </span>
+
+        <div class="timeline-body border-bottom mb-3">
+            <div class="mb-3">{{ reply.text }}</div>
+        </div>
+    </div>
+</div>

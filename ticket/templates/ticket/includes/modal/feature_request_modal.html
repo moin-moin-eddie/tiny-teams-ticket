@@ -1,0 +1,32 @@
+<form id="feature_request_form" method="POST" style="display: none">{% csrf_token %}</form>
+<div class="modal fade show" id="feature_request_modal" style="display: none; padding-right: 17px;"
+     aria-modal="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h4 class="modal-title">Wir freuen uns auf neue Ideen!</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="post">
+                            <div class="input-group input-group-sm mb-0">
+                                <textarea form="feature_request_form" id="feature_request" class="form-control form-control-plaintext"
+                                          placeholder="Wie können wir das system verbessern? :D" name="feature_request"></textarea>
+                            </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="modal-footer justify-content-between">
+                    <button form="feature_request_form"
+                            type="submit"
+                            onclick="this.disabled=true,this.form.submit()"
+                            class="btn btn-success">Zuschicken</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

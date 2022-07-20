@@ -1,0 +1,108 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Benutzer anlegen {% endblock %}
+
+<!-- Element injected in the BODY element -->
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet"
+          href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content-wrapper">
+
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Benuzter anlegen</h1>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pt-0">
+                {% csrf_token %}
+                {% load crispy_forms_tags %}
+                {{ form|crispy }}<br/>
+                <button onclick="ajax_create_user()" class="btn btn-success">Benutzer anlegen</button>
+            </div>
+            <!-- /.card-body -->
+        </section>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+    <!-- jQuery -->
+    <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/assets/js/adminlte.min.js"></script>
+    <!-- Page Script -->
+    <!-- SweetAlert -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+
+        var csrftoken = '{{ csrf_token }}';
+
+        function ajax_create_user() {
+            let email_input = document.getElementById('id_email');
+            let name_input = document.getElementById('id_name');
+            let email = email_input.value;
+            let name = name_input.value;
+            console.log(email, name);
+            $.ajax({
+                type: 'post',
+                url: '/create-user/',
+                data: {
+                    csrfmiddlewaretoken: csrftoken,
+                    email: email,
+                    name: name
+                },
+                dataType: 'json',
+                success: function (data) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.name + ' wurde erfolgreich angelegt',
+                        text: 'Ein Email mit Zugangsdaten wird an ' + data.email + ' geschickt.'
+                    })
+                    name_input.value = "";
+                    email_input.value = "";
+                }
+            });
+        }
+    </script>
+
+{% endblock javascripts %}

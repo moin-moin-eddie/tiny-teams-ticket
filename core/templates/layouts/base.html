@@ -1,0 +1,46 @@
+{% load hijack_tags %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% block immediatescripts %}{% endblock immediatescripts %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        ITticket - {% block title %}{% endblock %}
+    </title>
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}"/>
+
+    {% block stylesheets %}
+
+
+    {% endblock stylesheets %}
+
+</head>
+<body class="{{ request.user.microsoftprofile.dark_mode_active|yesno:"dark-mode,," }} hold-transition layout-top-nav{% block body_class %}{% endblock body_class %}">
+{% hijack_notification %}
+<div class="wrapper">
+
+    {% include 'includes/navigation.html' %}
+
+    {% block content %}{% endblock content %}
+
+    {% include 'includes/footer.html' %}
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+
+</div>
+<!-- ./wrapper -->
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
+
+</body>
+</html>

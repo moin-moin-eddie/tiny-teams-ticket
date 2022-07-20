@@ -1,0 +1,49 @@
+<div class="card">
+    <div class="card-header">
+        Tickets pro Problemquelle
+    </div>
+    <div class="card-body" id="container">
+        <canvas id="pie-chart"></canvas>
+    </div>
+</div>
+
+<script>
+    var pie_config = {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: {{ pie_data|safe }},
+                backgroundColor: [
+                    '#007bff',
+                    '#e83e8c',
+                    '#fd7e14',
+                    '#ffc107',
+                    '#28a745',
+                    '#20c997',
+                    '#17a2b8',
+                    '#6f42c1',
+                    '#007bff',
+                    '#dc3545',
+                    '#28a745',
+                    '#17a2b8',
+                    '#6610f2',
+                    '#ffc107',
+                    '#dc3545',
+                ],
+                label: 'Tickets pro Problemquelle'
+            }],
+            labels: {{ pie_labels|safe }}
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'left',
+                    align: 'right'
+                },
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    };
+</script>

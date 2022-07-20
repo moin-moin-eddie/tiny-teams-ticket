@@ -1,0 +1,36 @@
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.idea/*
+
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# database & logs
+*.db
+*.sqlite3
+*.log
+
+# venv
+env
+venv
+.env*
+
+# other
+.DS_Store
+media
+
+# javascript
+package-lock.json
+
+static/*
+media/*
+!staticfiles/.gitkeep 
+.vscode/symbols.json
+
+# MS Auth Settings
+authentication/oauth_settings.yml
+
+# Shell Scripts
+*.sh

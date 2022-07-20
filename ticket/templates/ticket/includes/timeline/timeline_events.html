@@ -1,0 +1,13 @@
+{% for event_group in timeline_events %}
+    <!-- timeline time label -->
+    <div class="time-label">
+        <span class="bg-red">{{ event_group.0.date }}</span>
+    </div>
+    <!-- /.timeline-label -->
+    <!-- timeline item -->
+    {% for event in event_group %}
+        {% include "./timeline_event.html" %}
+    {% endfor %}
+    <!-- END timeline item -->
+    <!-- timeline item -->
+{% endfor %}

@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>Hilfe!</h3>
+
+                <h5>Neues Ticket erstellen</h5>
+            </div>
+            <div class="icon">
+                <i class="far fa-plus-square"></i>
+            </div>
+            <a href="{% url 'problem_sources' %}" class="small-box-footer">Los! <i
+                    class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>{{ open_ticket_count }}</h3>
+
+                {% if open_ticket_count != 0 %}
+                    <h5>Offene Tickets</h5>
+                {% else %}
+                    <h5>Keine offene Tickets</h5>
+                {% endif %}
+            </div>
+            <div class="icon">
+                <i class="fas fa-lock-open"></i>
+            </div>
+            <a href="{% url 'ticket_list' type='mine' status='open' %}"
+               class="small-box-footer">Anzeigen <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>{{ closed_ticket_count }}</h3>
+
+                {% if closed_ticket_count != 0 %}
+                    <h5>Geschlossene Tickets</h5>
+                {% else %}
+                    <h5>Keine geschlossene Tickets</h5>
+                {% endif %}
+            </div>
+            <div class="icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <a href="{% url 'ticket_list' type='mine' status='closed' %}"
+               class="small-box-footer">Anzeigen <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3><i class="far fa-lightbulb"></i></h3>
+
+                <h5>Neue Feature-Anfrage</h5>
+            </div>
+            <div class="icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <a data-toggle="modal" data-target="#feature_request_modal" class="small-box-footer">Wie können wir das
+                System verbessern? <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+</div>
+{% if not user.is_staff %}{% include '../modal/feature_request_modal.html' %}{% endif %}

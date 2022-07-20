@@ -1,0 +1,86 @@
+<div class="card-tools">
+    <form id="ticket_actions" method="post" style="display: none">{% csrf_token %}</form>
+    {% if user.is_staff %}
+        <div class="btn-group">
+            {% if ticket.is_paused and not ticket.completed %}
+                <button type="submit"
+                        form="ticket_actions"
+                        name="unpause"
+                        value="true"
+                        class="btn btn-success">
+                    <i class="fas fa-play"></i> Erinnerungen fortsetzen
+                </button>
+            {% elif not ticket.is_paused and not ticket.completed %}
+                <button type="button"
+                        class="btn btn-outline-warning dropdown-toggle"
+                        data-toggle="dropdown">
+                    <i class="fas fa-pause-circle"></i> Erinnerungen pausieren
+                </button>
+                <div class="dropdown-menu" role="menu">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <label for="datepicker">Bis:</label>
+                            <input name="pause_until" form="ticket_actions" type="datetime-local" class="ui-datepicker"
+                                   id="datepicker">
+                            <button form="ticket_actions" type="submit" class="button btn-block btn-warning">
+                                <i class="fas fa-pause-circle"></i> Pausieren
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown">
+                <i class="fas fa-exclamation-circle"></i> Priorität setzen
+            </button>
+            <div class="dropdown-menu" role="menu">
+                {% for prio,number in ticket.get_priorities.items %}
+                    <button form="ticket_actions" type="submit" name="priority" value="{{ number }}"
+                            class="dropdown-item">
+                        {{ prio }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown">
+                <i class="fas fa-sign-in-alt"></i> Zuweisen
+            </button>
+            <div class="dropdown-menu" role="menu">
+                {% for employee in employees %}
+                    <a class="dropdown-item" data-toggle="modal" data-target="#open_modal_{{ employee.id }}">
+                        {{ employee.first_name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% if ticket.completed %}
+            <button form="ticket_actions" type="submit" name="open" value="open" class="btn btn-secondary"><i
+                    class="fas fa-box-open"></i>
+                Wieder öffnen
+            </button>
+        {% else %}
+            <button data-toggle="modal" data-target="#close_ticket_modal" class="btn btn-success"><i
+                    class="fas fa-check-circle"></i>
+                Als erledigt markieren
+            </button>
+        {% endif %}
+    {% endif %}
+
+    {% if user.is_staff or user == ticket.created_by %}
+        <a class="btn btn-info" data-toggle="modal" data-target="#search_users_modal"><i class="fas fa-user-plus"></i>
+            Zugriff erlauben
+        </a>
+        <a href="{% url 'edit_ticket' id=ticket.id %}" class="btn btn-warning"><i class="far fa-edit"></i>
+            Bearbeiten
+        </a>
+        {% include 'ticket/includes/modal/search_users_modal.html' %}
+    {% endif %}
+</div>
+{% for employee in employees %}
+    {% include '../modal/assign_ticket_modal.html' %}
+{% endfor %}
+{% include '../modal/close_ticket_modal.html' %}

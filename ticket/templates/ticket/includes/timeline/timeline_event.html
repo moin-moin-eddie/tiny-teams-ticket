@@ -1,0 +1,59 @@
+<div>
+    {% if '/ticket/' in request.path %}
+        {% if not event.is_reply %}
+            <i class="{{ event.event_icon }} bg-{{ event.event_color }}"></i>
+            <div class="timeline-item">
+                <span class="time"><i class="fas fa-clock"></i>{{ event.timestamp.time }}</span>
+                <h3 class="timeline-header">
+                    {{ event.event_text }}
+                </h3>
+
+                {% if event.text or event.comment %}
+                    {% if not event.is_internal or request.user.is_staff %}
+                        <div class="timeline-body">
+                            <div style="white-space: pre-wrap">{% if event.is_internal and user.is_staff %}<i class="text-xs">( Interne Notiz ) </i> {% endif %}{{ event.comment.text }}</div>
+                            {% if event.is_comment or event.is_reply %}
+                                <div class="timeline-footer mt-3">
+                                    <a id="reply_to_{{ event.comment.id }}"
+                                       title="Antworten"
+                                       onclick="toggle_reply('reply_{{ event.comment.id }}', 'reply_to_{{ event.comment.id }}')"
+                                       class="timeline-footer"
+                                       style="cursor: pointer;">
+                                        <i class="fas fa-reply"></i>
+                                    </a>
+                                </div>
+                                {% include "../comment/create_reply.html" %}
+                                {% for reply in event.comment.get_replies %}
+                                    {% include '../comment/reply.html' %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+
+
+        <i class="{{ event.event_icon }} bg-{{ event.event_color }}"></i>
+        <div class="timeline-item">
+            <span class="time"><i class="fas fa-clock"></i>{{ event.timestamp.time }}</span>
+            <h3 class="timeline-header"><a
+                    href="{% url 'ticket_detail' id=event.ticket.id %}">{{ event.category }}</a>
+                {{ event.event_text }}
+                {% if event.ticket.title %}
+                    </br><h6 class="timeline-header">{{ event.ticket.title }}</h6>
+                {% endif %}
+            </h3>
+
+            {% if event.comment %}
+                {% if not event.is_internal or request.user.is_staff %}
+                    <div class="timeline-body">
+                        <div style="white-space: pre-wrap">{{ event.text }}</div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+    {% endif %}
+</div>

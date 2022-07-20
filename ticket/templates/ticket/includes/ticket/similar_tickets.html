@@ -1,0 +1,28 @@
+<div class="card-body">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th style="width: 10px">ID</th>
+            <th>Kategorie</th>
+            <th>Titel</th>
+            <th>Vorschau</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ticket in open_tickets_same_category %}
+            <tr>
+                <td><a href="{% url 'ticket_detail' id=ticket.id %}">{{ ticket.id }}</a></td>
+                <td><a href="{% url 'ticket_detail' id=ticket.id %}">{{ ticket.category }}</a></td>
+                <td>{{ ticket.title }}</td>
+                <td>{{ ticket.note|truncatechars_html:255|safe }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $("tr").click(function() {
+    // what to do
+});
+</script>

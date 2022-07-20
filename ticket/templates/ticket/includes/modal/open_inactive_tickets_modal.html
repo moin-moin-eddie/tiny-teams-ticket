@@ -1,0 +1,98 @@
+<form id="pause_ticket_form" method="post" style="display: none">{% csrf_token %}</form>
+
+<div class="modal fade show" id="open_inactive_ticket_modal"
+     style="display: {{ tickets|yesno:"block,none" }}; padding-right: 17px;"
+     aria-modal="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Du hast offene Tickets die deine Aufmerksamkeit benötigen! 👇️</h4>
+                <button type="button" class="close" onclick="close_open_inactive_modal()" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true" class="text-danger text-xl">×</span>
+                </button>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-striped table-responsive table-head-fixed">
+                    <thead class="text-black">
+                    <tr>
+                        <th style="width: 10px">ID</th>
+                        <th>Kategorie</th>
+                        <th>Erstellt von</th>
+                        <th>Titel</th>
+                        <th>Vorschau</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for ticket in tickets %}
+                        <tr>
+                            <td class="text-bold"><a href="{% url 'ticket_detail' id=ticket.id %}">{{ ticket.id }}</a>
+                            </td>
+                            <td class="text-bold"><a
+                                    href="{% url 'ticket_detail' id=ticket.id %}">{{ ticket.category }}</a></td>
+                            <td class="text-bold">{{ ticket.created_by }}</td>
+                            <td>{{ ticket.title }}</td>
+                            <td>{{ ticket.note|truncatechars_html:255|safe }}</td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-warning dropdown-toggle"
+                                        id="pause_{{ ticket.id }}"
+                                        data-toggle="dropdown">
+                                    <i class="fas fa-pause-circle" id="icon_{{ ticket.id }}"></i> Erinnerungen pausieren
+                                </button>
+                                <div class="dropdown-menu" role="menu">
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                            <label for="datepicker">Bis:</label>
+                                            <input name="pause_until" form="ticket_actions" type="datetime-local"
+                                                   class="ui-datepicker"
+                                                   id="pause_ticket_{{ ticket.id }}">
+                                            <button form="pause_ticket_form" type="button"
+                                                    onclick="pause_ticket_reminders({{ ticket.id }});"
+                                                    class="button btn-block btn-warning">
+                                                <i class="fas fa-pause-circle"></i> Pausieren
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+</div>
+<script>
+    function close_open_inactive_modal() {
+        let modal = document.getElementById('open_inactive_ticket_modal');
+        modal.style.display = 'none';
+        modal.className = 'modal fade';
+    }
+
+    function pause_ticket_reminders(ticket_id) {
+        let id = $(this).attr('id');
+        pause_until_input = document.getElementById('pause_ticket_' + ticket_id);
+        pause_until = pause_until_input.value;
+        $.ajax({
+            type: "GET",
+            url: '/ajax/pause-reminders/',
+            data: {
+                'ticket_id': ticket_id,
+                'paused_until': pause_until
+            },
+            dataType: 'json',
+            success: function (data) {
+                button = document.getElementById('pause_' + ticket_id);
+                //icon = document.getElementById('icon_' + ticket_id);
+                //icon.className = 'fas fa-play';
+                button.innerHTML = '<i class=\"fas fa-check-circle\"></i> Erinnerungen pausiert';
+                button.className = 'btn btn-success';
+                button.disabled = true;
+            }
+        });
+    }
+</script>

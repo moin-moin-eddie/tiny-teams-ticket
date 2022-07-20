@@ -1,0 +1,3 @@
+-r common-requirements.txt
+
+django-debug-toolbar

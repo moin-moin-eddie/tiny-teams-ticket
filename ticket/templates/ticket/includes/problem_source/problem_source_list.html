@@ -1,0 +1,19 @@
+{% if common_problem_sources %}
+    <div class="card">
+        <div class="card-header">
+            Häufig verwendete Problemquellen
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for source in common_problem_sources %}
+                    {% include "./common_problem_source.html" %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+<div class="row">
+    {% for source in problem_sources %}
+        {% include "./problem_source.html" %}
+    {% endfor %}
+</div>

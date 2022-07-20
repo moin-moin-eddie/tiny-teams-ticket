@@ -1,0 +1,150 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Login {% endblock %}
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} login-page {% endblock body_class %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="login-box">
+
+        <div class="login-logo">
+            <a target="_blank" rel="noopener noreferrer"
+               href="{% url 'home' %}"><h1><b>IT</b>ticket</a></h3>
+        </div>
+
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+
+                <p class="login-box-msg text-red">
+                    {% if msg %}
+                        {{ msg | safe }}
+                    {% endif %}
+                </p>
+
+                <form method="post" action="">
+
+                    {% csrf_token %}
+                    <div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button onclick="initiateSSO();" type="button"
+                                        class="btn btn-primary btn-block">Einloggen mit Microsoft
+                                </button>
+                            </div>
+                        </div>
+                        </br>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="btn btn-danger btn-block" type="button"
+                                        data-toggle="collapse" data-target="#credentials">Einloggen mit Zugangsdaten
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="credentials" class="collapse mt-2">
+                        <div class="input-group mb-3">
+                            {{ form.username }}
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            {{ form.password }}
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- /.col -->
+                            <div class="col-12">
+                                <button type="submit" name="login" class="btn btn-primary btn-block">Einloggen</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                </form>
+            </div>
+
+            <br/><br/>
+
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- jQuery -->
+    <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- MS Teams SDK -->
+    <script src="https://statics.teams.cdn.office.net/sdk/v1.8.0/js/MicrosoftTeams.min.js"></script>
+    <script>
+        // If in Teams (iFrame), attempt auto sign-in
+        {% comment %}        document.addEventListener("DOMContentLoaded", function () {
+                    if (window.location !== window.parent.location) {
+                        microsoftTeams.initialize();
+                        var authTokenRequest = {
+                            successCallback: function (result) {
+                                location.href = '{% url 'callback' %}?jwt=' + result
+                            },
+                            failureCallback: function (error) {
+                                console.log("Failure: " + error);
+                            }
+                        };
+                        microsoftTeams.authentication.getAuthToken(authTokenRequest);
+                    }
+                }){% endcomment %}
+
+
+        function initiateSSO() {
+            // If in iFrame:
+            if (window.location !== window.parent.location) {
+                microsoftTeams.initialize();
+                microsoftTeams.getContext(function (context) {
+                    var email = context.userPrincipalName;
+                    var authTokenRequest = {
+                        successCallback: function (result) {
+                            location.href = '{% url 'callback' %}?email=' + email +'&jwt=' + result
+                        },
+                        failureCallback: function (error) {
+                            console.log("Failure: " + error);
+                        }
+                    };
+                    microsoftTeams.authentication.getAuthToken(authTokenRequest);
+                });
+            } else {
+                location.href = '{% url 'signin' %}'
+            }
+        }
+    </script>
+
+
+{% endblock javascripts %}

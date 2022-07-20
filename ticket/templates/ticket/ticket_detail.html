@@ -1,0 +1,268 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Ticket Details {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet"
+          href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="/static/assets/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/static/assets/plugins/summernote/summernote-bs4.min.css">
+
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h1 class="card-title">Ticket Details</h1>
+                    {% include 'ticket/includes/ticket/ticket_actions.html' %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-7 order-2 order-md-1">
+                    <div class="row">
+                        {% include "ticket/includes/ticket/ticket_statistics.html" %}
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Timeline</h3></div>
+                        <div class="card card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    {% include 'ticket/includes/comment/create_comment.html' %}
+                                    {% if not user.is_staff and ticket.completed %}
+                                        <a href="{% url 'ticket_detail' id=ticket.id %}?thanks=true"
+                                           class="btn btn-block bg-info">
+                                            <i class="fas fa-heart"></i>
+                                            Danke sagen
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <div class="timeline">{% include 'ticket/includes/timeline/timeline_events.html' %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 col-lg-5 order-1 order-md-2">
+                    <div class="card">
+                        <h2 class="text-primary card-header"><i
+                                class="fas fa-ticket-alt"></i> {{ ticket.category }}
+                            {% if user.is_staff %}
+                                <div class="card-tools">
+                                    <button data-toggle="modal" data-target="#change_category_modal"
+                                            class="btn btn-warning"><i
+                                            class="fas fa-highlighter"></i>
+                                        Kategorie ändern
+                                    </button>
+                                </div>
+                                {% include 'ticket/includes/modal/change_source_modal.html' %}
+                            {% endif %}
+                        </h2>
+                        {% if ticket.title %}<h4 class="text-secondary card-header"> {{ ticket.title }}</h4>{% endif %}
+                        <div class="card-body">
+                            {% if edit %}
+                                {% include 'ticket/includes/ticket/create_edit_ticket_form.html' %}
+                            {% else %}
+                                {% include 'ticket/includes/ticket/ticket_metadata.html' %}
+                            {% endif %}
+                            {% include 'ticket/includes/attachment/attachments_list.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+{% endblock content %}
+
+{% block javascripts %}
+
+    <!-- jQuery -->
+    <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/assets/js/adminlte.min.js"></script>
+    <!-- Summernote -->
+    <script src="/static/assets/plugins/summernote/summernote-bs4.min.js"></script>
+    <script src="/static/assets/plugins/summernote/summernote-de-DE.js"></script>
+    <!-- Page Script -->
+    <script>
+        $('.custom-file input').change(function (e) {
+            var files = [];
+            for (var i = 0; i < $(this)[0].files.length; i++) {
+                files.push($(this)[0].files[i].name);
+            }
+            $(this).next('.custom-file-label').html(files.join(', '));
+        });
+
+        $(document).ready(function () {
+            $('.summernote').summernote({lang: 'de-DE'});
+        })
+
+
+        function toggle_reply(reply_id, reply_link_id) {
+            let reply_input = document.getElementById(reply_id);
+            if (window.getComputedStyle(reply_input).display === "none") {
+                document.getElementById(reply_id).style.display = 'block';
+                document.getElementById(reply_link_id).style.display = 'none';
+            } else {
+                document.getElementById(reply_id).style.display = 'none';
+                document.getElementById(reply_link_id).style.display = 'block';
+            }
+        }
+
+
+        function addUser() {
+            let id = $(this).attr('id');
+            $.ajax({
+                type: "GET",
+                url: '/ajax/add-user/',
+                data: {
+                    'ticket_id': {{ ticket.id }},
+                    'user_id': id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    button = document.getElementById(id);
+                    followers_header = document.getElementById('followers_header');
+                    followers_body = document.getElementById('followers_body');
+                    button.className = "btn btn-default disabled"
+                    button.innerText = "Benutzer hinzugefügt"
+                    followers_header.style.display = 'block';
+                    let user_name = data.user_name;
+                    let row = followers_body.insertRow();
+                    let cell = row.insertCell();
+                    cell.innerText = user_name;
+                }
+            });
+        }
+
+
+        function showResults() {
+
+            let name = $('#name').val();
+
+            $.ajax({
+                url: '/ajax/search-users/',
+                data: {
+                    'name': name,
+                    'ticket_id': {{ ticket.id }}
+                },
+                dataType: 'json',
+                success: function (data) {
+                    let table = $('#results_table');
+                    let results = JSON.parse(data.results);
+                    if (results.length > 0) {
+                        table.empty();
+                        $.each(results, function (i, item) {
+                            let id = results[i].pk;
+                            let first_name = results[i].fields.first_name;
+                            let new_row = '<tr><td>' + id + '</td><td>' +
+                                first_name + '</td><td>' +
+                                '<button class="btn btn-info" name="add_user_button" id="' +
+                                id + '"><i class="fas fa-user-plus"></i> Benutzer hinzufügen</button></td></tr>';
+                            table.append(new_row);
+                        });
+                        const add_user_buttons = document.querySelectorAll('button[name="add_user_button"]');
+                        add_user_buttons.forEach(function (i) {
+                            i.addEventListener("click", addUser);
+                        })
+                    } else {
+                        table.empty();
+                        table.append('<tr><td>Keine Ergebnisse</td></tr>')
+                    }
+                }
+            });
+            return false;
+        }
+
+
+        var delay = (function () {
+            var timer = 0;
+            return function (callback, ms) {
+                clearTimeout(timer);
+                timer = setTimeout(callback, ms);
+            };
+        })();
+
+
+        $('#search_users_form').submit(function (e) {
+            e.preventDefault();
+            showResults();
+        });
+
+        $('#name').keyup(function (e) {
+            delay(function () {
+                showResults();
+            }, 1000);
+        });
+
+        jQuery(document).ready(function () {
+            jQuery("#textArea").on("keydown keyup", function () {
+                this.style.height = "1px";
+                this.style.height = (this.scrollHeight) + "px";
+            });
+        });
+
+        function getScrollHeight(elm) {
+            var savedValue = elm.value
+            elm.value = ''
+            elm._baseScrollHeight = elm.scrollHeight
+            elm.value = savedValue
+        }
+
+        function onExpandableTextareaInput({target: elm}) {
+            // make sure the input event originated from a textarea and it's desired to be auto-expandable
+            if (!elm.classList.contains('auto-expand') || !elm.nodeName == 'TEXTAREA') return
+
+            var minRows = elm.getAttribute('data-min-rows') | 0, rows;
+            !elm._baseScrollHeight && getScrollHeight(elm)
+
+            elm.rows = minRows
+            rows = Math.ceil((elm.scrollHeight - elm._baseScrollHeight) / 16)
+            elm.rows = minRows + rows
+        }
+
+
+        // global delegated event listener
+        document.addEventListener('input', onExpandableTextareaInput)
+
+    </script>
+
+{% endblock javascripts %}

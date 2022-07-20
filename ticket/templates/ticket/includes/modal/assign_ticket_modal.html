@@ -1,0 +1,29 @@
+<form id="assign_to_{{ employee.id }}" method="post" style="display: none">{% csrf_token %}</form>
+<div class="modal fade show" id="open_modal_{{ employee.id }}" style="display: none; padding-right: 17px;"
+     aria-modal="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h4 class="modal-title">An {{ employee.first_name }} zuweisen</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="post">
+                            <div class="input-group input-group-sm mb-0">
+                                <textarea form="assign_to_{{ employee.id }}" id="internal_note" class="form-control form-control-plaintext"
+                                          placeholder="Schreib eine interne Notiz" name="internal_note"></textarea>
+                            </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="modal-footer justify-content-between">
+                    <button form="assign_to_{{ employee.id }}" type="submit" class="btn btn-success" name="assign_to" value="{{ employee.id }}">Zuweisen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+{% if attachments %}
+<h5 class="mt-5 text-muted">Dateien</h5>
+<ul class="list-unstyled">
+    {% for attachment in attachments %}
+        {% include "./attachment.html" %}
+    {% endfor %}
+</ul>
+{% endif %}

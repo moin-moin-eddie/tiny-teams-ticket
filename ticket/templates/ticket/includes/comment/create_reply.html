@@ -1,0 +1,16 @@
+<div class="post" id="reply_{{ event.comment.id }}" style="display: none">
+    <form method="post" class="form-horizontal">
+        {% csrf_token %}
+        <div class="input-group input-group-sm mb-0">
+            <input style="display: none" name="comment_id" value="{{ event.comment.id }}">
+            <input id="{{ event.comment.id }}" class="form-control form-control-sm"
+                   placeholder="Schreib eine Antwort" name="new_reply">
+            <div class="input-group-append">
+                <button type="submit" onclick="this.disabled=true,this.form.submit()" class="btn btn-success">Senden</button>
+                <button type="reset" class="btn btn-danger"
+                        onclick="toggle_reply('reply_{{ event.comment.id }}', 'reply_to_{{ event.comment.id }}')">Abbrechen
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

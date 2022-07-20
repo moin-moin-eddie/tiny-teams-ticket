@@ -1,0 +1,9 @@
+# RENAME FILLED OUT VERSION OF THIS FILE TO "oauth_settings.yml" IN PRODUCTION
+app_id: "PLACEHOLDER"
+app_secret: "PLACEHOLDER"
+tenant_id: "PLACEHOLDER"
+redirect: "/callback/"
+scopes:
+  - user.readbasic.all
+  - team.readbasic.all
+authority: "https://login.microsoftonline.com/PLACEHOLDER"

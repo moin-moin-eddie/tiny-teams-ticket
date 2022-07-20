@@ -1,0 +1,163 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="card">
+    <div class="card-header">
+        Tickets pro Tag
+    </div>
+    <div class="card-body" id="container">
+        <canvas id="bar-chart"></canvas>
+    </div>
+    <div class="card-footer bg-transparent">
+        <div class="row">
+            <div class="col-4 text-center">
+                <h4>{{ all_open_ticket_with_high_prio_count }}</h4>
+                <div>Tickets mit hoher Priorität</div>
+            </div>
+            <!-- ./col -->
+            <div class="col-4 text-center">
+                <h4>{{ tickets_opened_today }}</h4>
+                <div>Tickets heute geöffnet</div>
+            </div>
+            <!-- ./col -->
+            <div class="col-4 text-center">
+                <h4>{{ tickets_closed_today }}</h4>
+                <div>Tickets heute geschlossen</div>
+            </div>
+            <!-- ./col -->
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var pie_config = {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: {{ pie_data|safe }},
+                backgroundColor: [
+                    '#007bff',
+                    '#e83e8c',
+                    '#fd7e14',
+                    '#ffc107',
+                    '#28a745',
+                    '#20c997',
+                    '#17a2b8',
+                    '#6f42c1',
+                    '#007bff',
+                    '#dc3545',
+                    '#28a745',
+                    '#17a2b8',
+                    '#6610f2',
+                    '#ffc107',
+                    '#dc3545',
+                ],
+                label: 'Tickets pro Problemquelle'
+            }],
+            labels: {{ pie_labels|safe }}
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'left',
+                    align: 'right'
+                },
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    };
+
+    var bar_data = {
+        labels: {{ bar_labels|safe }},
+        datasets: [
+            {
+                label: 'Anzahl der Tickets geöffnet',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                pointRadius: false,
+                borderWidth: 4,
+                pointColor: '#3b8bba',
+                pointStrokeColor: 'rgba(60,141,188,1)',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data: {{ bar_open_data|safe }}
+            },
+            {
+                label: 'Anzahl der Tickets geschlossen',
+                backgroundColor: 'rgba(210, 214, 222, 1)',
+                borderColor: 'rgba(210, 214, 222, 1)',
+                pointRadius: false,
+                fill: true,
+                pointColor: 'rgba(210, 214, 222, 1)',
+                pointStrokeColor: '#c1c7d1',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(220,220,220,1)',
+                data: {{ bar_closed_data }}
+            }
+        ]
+    }
+
+    var bar_options = {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: false
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: false
+                }
+            }]
+        }
+    }
+
+    var bar_config = {
+        type: "line",
+        data: bar_data,
+        options: bar_options
+    };
+
+
+    window.onload = function () {
+        Chart.defaults.color = "{{ user.microsoftprofile.dark_mode_active|yesno:'#ffffff,#343a40' }}";
+        var pie_ctx = document.getElementById('pie-chart').getContext('2d');
+        window.myPie = new Chart(pie_ctx, pie_config);
+        var bar_ctx = document.getElementById('bar-chart').getContext('2d');
+        window.myBar = new Chart(bar_ctx, bar_config);
+    };
+
+    function close_open_inactive_modal() {
+        let modal = document.getElementById('open_inactive_ticket_modal');
+        modal.style.display = 'none';
+        modal.className = 'modal fade';
+    }
+
+    function pause_ticket_reminders(ticket_id) {
+        let id = $(this).attr('id');
+        pause_until_input = document.getElementById('pause_ticket_' + ticket_id);
+        pause_until = pause_until_input.value;
+        $.ajax({
+            type: "GET",
+            url: '/ajax/pause-reminders/',
+            data: {
+                'ticket_id': ticket_id,
+                'paused_until': pause_until
+            },
+            dataType: 'json',
+            success: function (data) {
+                button = document.getElementById('pause_' + ticket_id);
+                button.innerHTML = '<i class=\"fas fa-check-circle\"></i> Erinnerungen pausiert';
+                button.className = 'btn btn-success';
+                button.disabled = true;
+            }
+        });
+    }
+</script>

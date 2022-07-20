@@ -1,0 +1,23 @@
+<div class="post">
+    <form method="post" class="form-horizontal">
+        {% csrf_token %}
+        <label class="col-form-label">Schreib einen Kommentar</label>
+        {% if user.is_staff %}
+            <div class="custom-control custom-checkbox text-sm-right">
+            <input class="custom-control-input" type="checkbox" name="comment_is_internal" id="internal_comment_checkbox" value="true">
+            <label for="internal_comment_checkbox" class="custom-control-label">Nur intern sichtbar?</label>
+        </div>
+        {% endif %}
+        <div class="input-group input-group-sm mb-3">
+            <label for="note"></label><textarea id="note"
+                                                class="auto-expand form-control form-control-sm"
+                                                rows='2' data-min-rows='2'
+                                                placeholder="Dein Kommentar kommt hier rein..."
+                                                name="new_comment"></textarea>
+            <div class="input-group-append">
+                <button type="submit" onclick="this.disabled=true,this.form.submit()" class="btn btn-success">Senden
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
